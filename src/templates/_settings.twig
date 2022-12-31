@@ -4,23 +4,29 @@
 {% import '_includes/forms.twig' as forms %}
 
 
-{{ forms.lightswitchField({
+{{ forms.booleanMenuField({
     first: true,
     label: 'Enabled'|t('cloudflare-access'),
     name: 'enable',
     value: settings.enable,
     instructions: 'Enable logging in using Cloudflare Access.'|t('cloudflare-access'),
+    includeEnvVars: true,
 }) }}
 
-{{ forms.lightswitchField({
+{{ forms.booleanMenuField({
     first: true,
     label: 'Enforce'|t('cloudflare-access'),
     name: 'enforce',
     value: settings.enforce,
     instructions: 'Disable logging in by username and password.'|t('cloudflare-access'),
+    includeEnvVars: true,
 }) }}
 
 <hr>
+
+<h2>
+    {{ 'Cloudflare Settings'|t('cloudflare-access') }}
+</h2>
 
 {{ forms.autosuggestField({
     label: 'Team domain'|t('cloudflare-access'),
@@ -33,6 +39,7 @@
 
 {{ forms.autosuggestField({
     label: 'Application Audience (AUD) Tag'|t('cloudflare-access'),
+    instructions: 'Enter the Application Audiance (AUD) Tag.<br>You can find this tag under your application settings, on the Overview tab. Don\'t confuse it with the Application ID.'|t('cloudflare-access'),
     name: 'aud',
     value: settings.aud,
     suggestEnvVars: true,
