@@ -3,4 +3,37 @@
 
 {% import '_includes/forms.twig' as forms %}
 
-{# ... #}
+
+{{ forms.lightswitchField({
+    first: true,
+    label: 'Enabled'|t('cloudflare-access'),
+    name: 'enable',
+    value: settings.enable,
+    instructions: 'Enable logging in using Cloudflare Access.'|t('cloudflare-access'),
+}) }}
+
+{{ forms.lightswitchField({
+    first: true,
+    label: 'Enforce'|t('cloudflare-access'),
+    name: 'enforce',
+    value: settings.enforce,
+    instructions: 'Disable logging in by username and password.'|t('cloudflare-access'),
+}) }}
+
+<hr>
+
+{{ forms.autosuggestField({
+    label: 'Team domain'|t('cloudflare-access'),
+    name: 'issuer',
+    value: settings.issuer,
+    placeholder: 'example.cloudflareaccess.com'|t('cloudflare-access'),
+    instructions: 'Enter the team domain used for Cloudflare Zero Trust.<br>This is a domain name which ends with <code>.cloudflareaccess.com</code>. You can find your team domain in the Cloudflare Zero Trust dashboard under Settings → General Settings.'|t('cloudflare-access'),
+    suggestEnvVars: true,
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Application Audience (AUD) Tag'|t('cloudflare-access'),
+    name: 'aud',
+    value: settings.aud,
+    suggestEnvVars: true,
+}) }}
