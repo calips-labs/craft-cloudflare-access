@@ -70,13 +70,16 @@ class CloudflareAccess extends Plugin
             Application::class,
             Application::EVENT_BEFORE_ACTION,
             function (Event $event) {
-                if (!CloudflareAccess::getInstance()->getSettings()->enable) {
+                $plugin = CloudflareAccess::getInstance();
+
+                if (!$plugin->settings->enable) {
                     // Plugin not enabled
                     return;
                 }
 
                 if (!Application::getInstance()->request->isCpRequest) {
                     // Not a control panel request
+                    // TODO: also allow non-CP requests
                     return;
                 }
 
@@ -85,11 +88,41 @@ class CloudflareAccess extends Plugin
                     return;
                 }
 
-                if (Application::getInstance()->controller->route == 'users/login') {
-                    // CP login screen.
-                    // Check whether we can log in this user using Cloudflare Access
+                // Check whether we can log in this user using Cloudflare Access
+                $jwt = $plugin->cloudflareValidation->getJwtFromHeaders();
 
-                    // TODO
+                if ($jwt == null) {
+                    // No token set
+                    return;
+                }
+
+                // Validate token
+                $validationResult = $plugin->cloudflareValidation->verifyJwt($jwt);
+
+                if (!$validationResult->valid) {
+                    // Token invalid
+                    return;
+                }
+
+                // Find user:
+                $user = Craft::$app->getUsers()->getUserByUsernameOrEmail($validationResult->username);
+
+                if ($user == null) {
+                    // Token valid, but no user found
+                    return;
+                }
+
+                $userSession = Craft::$app->getUser();
+
+                if (!$userSession->login($user)) {
+                    // Error occurred while logging in
+                    return;
+                }
+
+                $returnUrl = $userSession->getReturnUrl();
+
+                if ($returnUrl != null) {
+                    Craft::$app->response->redirect($returnUrl);
                 }
             });
         Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function (RegisterComponentTypesEvent $event) {
