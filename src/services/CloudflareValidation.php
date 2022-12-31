@@ -8,6 +8,7 @@ use CoderCat\JWKToPEM\Exception\Base64DecodeException;
 use CoderCat\JWKToPEM\Exception\JWKConverterException;
 use CoderCat\JWKToPEM\JWKConverter;
 use Craft;
+use craft\helpers\App;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Lcobucci\JWT\Configuration;
@@ -21,6 +22,11 @@ use yii\base\Component;
 class CloudflareValidation extends Component
 {
     private array $keys = [];
+
+    public function getJwtFromHeaders(): ?string
+    {
+        return Craft::$app->request->headers->get('Cf-Access-Jwt-Assertion');
+    }
 
     public function verifyJwt($jwt): VerificationResult
     {
