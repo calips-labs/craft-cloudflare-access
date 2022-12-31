@@ -6,6 +6,8 @@ use Craft;
 use calips\cfaccess\models\Settings;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\web\Application;
+use yii\base\Event;
 
 /**
  * Cloudflare Access plugin
@@ -35,9 +37,8 @@ class CloudflareAccess extends Plugin
         parent::init();
 
         // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             $this->attachEventHandlers();
-            // ...
         });
     }
 
@@ -56,7 +57,36 @@ class CloudflareAccess extends Plugin
 
     private function attachEventHandlers(): void
     {
-        // Register event handlers here ...
-        // (see https://craftcms.com/docs/4.x/extend/events.html to get started)
+        // Check whether this plugin is enabled
+        if (!$this->getSettings()->enable) {
+            return;
+        }
+
+        Event::on(
+            Application::class,
+            Application::EVENT_BEFORE_ACTION,
+            function (Event $event) {
+                if (!CloudflareAccess::getInstance()->getSettings()->enable) {
+                    // Plugin not enabled
+                    return;
+                }
+
+                if (!Application::getInstance()->request->isCpRequest) {
+                    // Not a control panel request
+                    return;
+                }
+
+                if (!Application::getInstance()->user->isGuest) {
+                    // User already logged in
+                    return;
+                }
+
+                if (Application::getInstance()->controller->route == 'users/login') {
+                    // CP login screen.
+                    // Check whether we can log in this user using Cloudflare Access
+
+                    // TODO
+                }
+            });
     }
 }
