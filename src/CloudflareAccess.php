@@ -5,11 +5,12 @@ namespace calips\cfaccess;
 use Craft;
 use calips\cfaccess\models\Settings;
 use calips\cfaccess\services\CloudflareValidation;
+use calips\cfaccess\utilities\CfAccessTest;
 use craft\base\Model;
 use craft\base\Plugin;
-use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterComponentTypesEvent;
+use craft\services\Utilities;
 use craft\web\Application;
-use craft\web\UrlManager;
 use yii\base\Event;
 
 /**
@@ -66,14 +67,6 @@ class CloudflareAccess extends Plugin
         }
 
         Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $event->rules['GET /test-cf-access'] = 'cloudflare-access/cf-inspect/test-access';
-            }
-        );
-
-        Event::on(
             Application::class,
             Application::EVENT_BEFORE_ACTION,
             function (Event $event) {
@@ -99,5 +92,8 @@ class CloudflareAccess extends Plugin
                     // TODO
                 }
             });
+        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function (RegisterComponentTypesEvent $event) {
+            $event->types[] = CfAccessTest::class;
+        });
     }
 }

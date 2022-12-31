@@ -1,0 +1,120 @@
+<p>
+    {{ "This page shows whether your Cloudflare Access login is recognized successfully."|t('cloudflare-access') }}
+</p>
+
+<hr>
+
+<h2>
+    {{ "Verification settings"|t('cloudflare-access') }}
+</h2>
+
+<div class="pane">
+    <table>
+        <tr>
+            <th>
+                {{ 'Team domain'|t('cloudflare-access') }}
+            </th>
+            <td>
+                {{ issuer }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                {{ 'Application Audience (AUD) Tag'|t('cloudflare-access') }}
+            </th>
+            <td>
+                {{ aud }}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<hr>
+
+<h2>
+    {{ "JWT Assertion header"|t('cloudflare-access') }}
+</h2>
+
+<p>
+    {{ "The assertion header contains the token, signed by Cloudflare. It contains the used identity (e-mail address), the audience and the validity of the token."|t('cloudflare-access') }}
+</p>
+
+{% if jwt %}
+    <div class="pane">
+        <code style="word-break: break-all !important;"><strong>Cf-Access-Jwt-Assertion:</strong> {{ jwt }}</code>
+    </div>
+{% else %}
+    <p class="error">
+        {{ 'No JWT header found. Is this application proxied behind Cloudflare and is Cloudflare Access enabled for this URL?'|t('cloudflare-access') }}
+    </p>
+{% endif %}
+
+<hr>
+
+<h2>
+    {{ "Check result"|t('cloudflare-access') }}
+</h2>
+
+{% if result %}
+    <div class="pane">
+        <table class="table">
+            <tr>
+                <th>
+                    Valid login
+                </th>
+                <td>
+                    {% if result.valid %}
+                        <span class="icon icon-mask success" aria-hidden="true"><span
+                                    data-icon="check"></span></span>
+                        {{ 'Yes'|t('cloudflare-access') }}
+                    {% else %}
+                        <span class="icon icon-mask error" aria-hidden="true"><span
+                                    data-icon="remove"></span></span>
+                        {{ 'No'|t('cloudflare-access') }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if not result.valid %}
+                <tr>
+                    <th>
+                        Failure reason
+                    </th>
+                    <td>
+                        {% switch(result.failureReason) %}
+                        {% case constant('FAILURE_WRONG_ISSUER', result) %}
+                            {{ 'Team Domain (issuer ID) mismatch'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_WRONG_AUD', result) %}
+                            {{ 'Audience (AUD) tag mismatch'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_NO_EMAIL', result) %}
+                            {{ 'No e-mail address in JWT'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_INVALID_KEY', result) %}
+                            {{ 'JWT contains key which cannot be found'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_INVALID_JWT', result) %}
+                            {{ 'Invalid JWT'|t('cloudflare-access') }}
+                        {% default %}
+                            {{ result.failureReason|escape }}
+                        {% endswitch %}
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>
+                    Username
+                </th>
+                <td>
+                    {% if result.username %}
+                        <code>{{ result.username|escape }}</code>
+                    {% else %}
+                        <div class="error">
+                            {{ 'No username'|t('cloudflare-access') }}
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+{% else %}
+    <p class="error">
+        {{ 'JWT was not checked.'|t('cloudflare-access') }}
+    </p>
+{% endif %}
