@@ -4,6 +4,7 @@ namespace calips\cfaccess;
 
 use Craft;
 use calips\cfaccess\models\Settings;
+use calips\cfaccess\services\CloudflareValidation;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\web\Application;
@@ -17,6 +18,8 @@ use yii\base\Event;
  * @author Calips <support@calips.nl>
  * @copyright Calips
  * @license https://craftcms.github.io/license/ Craft License
+ * @property-read Settings $settings
+ * @property-read CloudflareValidation $cloudflareValidation
  */
 class CloudflareAccess extends Plugin
 {
@@ -26,9 +29,7 @@ class CloudflareAccess extends Plugin
     public static function config(): array
     {
         return [
-            'components' => [
-                // Define component configs here...
-            ],
+            'components' => ['cloudflareValidation' => CloudflareValidation::class],
         ];
     }
 
