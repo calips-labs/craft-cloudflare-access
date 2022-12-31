@@ -73,6 +73,12 @@ class CloudflareValidation extends Component
             return $result;
         }
 
+        if ($token->isExpired(new \DateTime())) {
+            $result->failureReason = VerificationResult::FAILURE_EXPIRED;
+            Craft::warning("Login failure: token expired", 'cloudflare-access');
+            return $result;
+        }
+
         // Check whether it is issued by Cloudflare:
         if (!$token->hasBeenIssuedBy($this->getIssuerUrl())) {
             $result->failureReason = VerificationResult::FAILURE_WRONG_ISSUER;
