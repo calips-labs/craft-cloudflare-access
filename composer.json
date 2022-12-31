@@ -1,0 +1,49 @@
+{
+    "name": "calips-labs/craft-cloudflare-access",
+    "description": "Cloudflare Access integration for Craft CMS.",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "support": {
+        "email": "support@calips.nl",
+        "issues": "https://github.com/calips-labs/craft-cloudflare-access/issues?state=open",
+        "source": "https://github.com/calips-labs/craft-cloudflare-access",
+        "docs": "https://github.com/calips-labs/craft-cloudflare-access",
+        "rss": "https://github.com/calips-labs/craft-cloudflare-access/releases.atom"
+    },
+    "require": {
+        "php": ">=8.0.2",
+        "craftcms/cms": "^4.3.5"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "calips\\cfaccess\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "cloudflare-access",
+        "name": "Cloudflare Access",
+        "developer": "Calips",
+        "documentationUrl": "https://github.com/calips-labs/craft-cloudflare-access",
+        "class": "calips\\cfaccess\\CloudflareAccess"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}
+
