@@ -17,12 +17,13 @@ class CfInspectController extends Controller
 
     public function actionTestAccess(): Response
     {
-        $jwt = CloudflareAccess::getInstance()->cloudflareValidation->getJwtFromHeaders();
+        $plugin = CloudflareAccess::getInstance();
+        $jwt = $plugin->cloudflareValidation->getJwtFromHeaders();
 
         $validationResult = null;
 
         if ($jwt != null) {
-            $validationResult = CloudflareAccess::getInstance()->cloudflareValidation->verifyJwt($jwt);
+            $validationResult = $plugin->cloudflareValidation->verifyJwt($jwt);
         }
 
         return $this->renderTemplate(
@@ -30,6 +31,8 @@ class CfInspectController extends Controller
             [
                 'jwt' => $jwt,
                 'result' => $validationResult,
+                'issuer' => $plugin->settings->getIssuer(),
+                'aud' => $plugin->settings->getAud(),
             ],
             View::TEMPLATE_MODE_CP
         );

@@ -40,6 +40,7 @@ class CloudflareValidation extends Component
         $signature = json_decode(base64_decode(explode('.', $idToken)[0]), true);
 
         if ($signature == null || !isset($signature['kid'])) {
+            $result->failureReason = VerificationResult::FAILURE_INVALID_JWT;
             Craft::warning("Login failure: Invalid JWT signature or no key ID found in JWT signature", 'cloudflare-access');
             return $result;
         }
@@ -48,6 +49,7 @@ class CloudflareValidation extends Component
 
         // Check for key:
         if (!isset($this->keys[$keyId])) {
+            $result->failureReason = VerificationResult::FAILURE_INVALID_KEY;
             Craft::warning("Login failure: Key {$keyId} sent by user in JWT not found in downloaded keys", 'cloudflare-access');
             return $result;
         }
@@ -65,19 +67,22 @@ class CloudflareValidation extends Component
         $token = $configuration->parser()->parse($jwt);
 
         // Check whether it is issued for this app:
-        if (!$token->isPermittedFor(CloudflareAccess::getInstance()->settings->aud)) {
+        if (!$token->isPermittedFor(CloudflareAccess::getInstance()->settings->getAud())) {
+            $result->failureReason = VerificationResult::FAILURE_WRONG_AUD;
             Craft::warning("Login failure: AUD not found in permitted audiences", 'cloudflare-access');
             return $result;
         }
 
         // Check whether it is issued by Cloudflare:
         if (!$token->hasBeenIssuedBy($this->getIssuerUrl())) {
+            $result->failureReason = VerificationResult::FAILURE_WRONG_ISSUER;
             Craft::warning("Login failure: JWT was not signed by isser {$this->getIssuerUrl()}", 'cloudflare-access');
             return $result;
         }
 
         // Check whether we have an email:
         if (!$token->claims()->has('email')) {
+            $result->failureReason = VerificationResult::FAILURE_NO_EMAIL;
             Craft::warning("Login failure: JWT does not contain an e-mail address", 'cloudflare-access');
             return $result;
         }
