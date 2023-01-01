@@ -56,8 +56,8 @@ class Login extends Component
             return;
         }
 
-        if ($user->suspended) {
-            // User found, but is suspended in Craft CMS
+        if ($user->suspended || (!$user->active && !$user->pending)) {
+            // User found, but is suspended or inactive in Craft CMS
             return;
         }
 
