@@ -105,7 +105,7 @@ class CloudflareValidation extends Component
 
     protected function getIssuerUrl(): string
     {
-        $issuer = CloudflareAccess::getInstance()->settings->issuer;
+        $issuer = CloudflareAccess::getInstance()->settings->getIssuer();
 
         if (!str_starts_with($issuer, 'https://')) {
             $issuer = 'https://' . $issuer;

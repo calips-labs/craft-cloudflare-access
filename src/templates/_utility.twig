@@ -12,6 +12,18 @@
     <table>
         <tr>
             <th>
+                {{ 'Automatic sign-in for control panel'|t('cloudflare-access') }}
+            </th>
+            <td>
+                {% if autologin_cp %}
+                    {{ 'Yes'|t('cloudflare-access') }}
+                {% else %}
+                    {{ 'No'|t('cloudflare-access') }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>
                 {{ 'Team domain'|t('cloudflare-access') }}
             </th>
             <td>

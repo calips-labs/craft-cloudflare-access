@@ -6,19 +6,10 @@
 
 {{ forms.booleanMenuField({
     first: true,
-    label: 'Enabled'|t('cloudflare-access'),
-    name: 'enable',
-    value: settings.enable,
-    instructions: 'Enable logging in using Cloudflare Access.'|t('cloudflare-access'),
-    includeEnvVars: true,
-}) }}
-
-{{ forms.booleanMenuField({
-    first: true,
-    label: 'Enforce'|t('cloudflare-access'),
-    name: 'enforce',
-    value: settings.enforce,
-    instructions: 'Disable logging in by username and password.'|t('cloudflare-access'),
+    label: 'Enable auto-login for control panel'|t('cloudflare-access'),
+    name: 'autologin_cp',
+    value: settings.autologin_cp,
+    instructions: 'Enable automatic sign-in using Cloudflare Access for the control panel.'|t('cloudflare-access'),
     includeEnvVars: true,
 }) }}
 

@@ -66,11 +66,6 @@ class CloudflareAccess extends Plugin
 
     private function attachEventHandlers(): void
     {
-        // Check whether this plugin is enabled
-        if (!$this->getSettings()->enable) {
-            return;
-        }
-
         Event::on(
             Application::class,
             Application::EVENT_BEFORE_ACTION,

@@ -16,19 +16,20 @@ class Login extends Component
     {
         $plugin = CloudflareAccess::getInstance();
 
-        if (!$plugin->settings->enable) {
-            // Plugin not enabled
+        if (!Application::getInstance()->user->isGuest) {
+            // User already logged in
             return;
         }
 
-        if (!Application::getInstance()->user->isGuest) {
-            // User already logged in
+        if (Application::getInstance()->request->isCpRequest && !$plugin->settings->isAutoLoginCp()) {
+            // Request is for CP, and auto sign in is not enabled for control panel
             return;
         }
 
         if (!Application::getInstance()->request->isCpRequest) {
             // Not a control panel request
             // TODO: also allow non-CP requests
+
             return;
         }
 

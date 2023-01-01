@@ -11,16 +11,21 @@ use craft\helpers\App;
  */
 class Settings extends Model
 {
-    public bool $enable = false;
-    public bool $enforce = false;
+    public bool|string $autologin_cp = false;
     public ?string $issuer = null;
     public ?string $aud = null;
 
     public function defineRules(): array
     {
         return [
-            [['enable', 'enforce'], 'boolean'],
-            [['issuer', 'aud'], 'required', 'when' => function(self $model) { return $model->enable; }],
+            [['autologin_cp'], 'safe'],
+            [
+                ['issuer', 'aud'],
+                'required',
+                'when' => function (self $model) {
+                    return $model->isAutoLoginCp();
+                }
+            ],
             [['issuer', 'aud'], 'string'],
         ];
     }
@@ -44,16 +49,8 @@ class Settings extends Model
     /**
      * @return bool
      */
-    public function isEnable(): bool
+    public function isAutoLoginCp(): bool
     {
-        return App::parseBooleanEnv($this->enable);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnforce(): bool
-    {
-        return App::parseBooleanEnv($this->enforce);
+        return App::parseBooleanEnv($this->autologin_cp);
     }
 }

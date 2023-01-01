@@ -42,6 +42,7 @@ class CfAccessTest extends Utility
             'result' => $validationResult,
             'issuer' => $plugin->settings->getIssuer(),
             'aud' => $plugin->settings->getAud(),
+            'autologin_cp' => $plugin->settings->isAutoLoginCp(),
         ]);
     }
 }
