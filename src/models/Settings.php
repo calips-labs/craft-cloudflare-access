@@ -12,13 +12,14 @@ use craft\helpers\App;
 class Settings extends Model
 {
     public bool|string $autologin_cp = false;
+    public bool|string $autologin_frontend = false;
     public ?string $issuer = null;
     public ?string $aud = null;
 
     public function defineRules(): array
     {
         return [
-            [['autologin_cp'], 'safe'],
+            [['autologin_cp', 'autologin_frontend'], 'safe'],
             [
                 ['issuer', 'aud'],
                 'required',
@@ -52,5 +53,10 @@ class Settings extends Model
     public function isAutoLoginCp(): bool
     {
         return App::parseBooleanEnv($this->autologin_cp);
+    }
+
+    public function isAutoLoginFrontend(): bool
+    {
+        return App::parseBooleanEnv($this->autologin_frontend);
     }
 }

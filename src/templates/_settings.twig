@@ -3,6 +3,9 @@
 
 {% import '_includes/forms.twig' as forms %}
 
+<h2>
+    {{ 'Automatic login'|t('cloudflare-access') }}
+</h2>
 
 {{ forms.booleanMenuField({
     first: true,
@@ -10,6 +13,14 @@
     name: 'autologin_cp',
     value: settings.autologin_cp,
     instructions: 'Enable automatic sign-in using Cloudflare Access for the control panel.'|t('cloudflare-access'),
+    includeEnvVars: true,
+}) }}
+
+{{ forms.booleanMenuField({
+    label: 'Enable auto-login for frontend'|t('cloudflare-access'),
+    name: 'autologin_frontend',
+    value: settings.autologin_frontend,
+    instructions: 'Enable automatic sign-in using Cloudflare Access for the frontend.'|t('cloudflare-access'),
     includeEnvVars: true,
 }) }}
 

@@ -26,10 +26,8 @@ class Login extends Component
             return;
         }
 
-        if (!Application::getInstance()->request->isCpRequest) {
-            // Not a control panel request
-            // TODO: also allow non-CP requests
-
+        if (!Application::getInstance()->request->isCpRequest && !$plugin->settings->isAutoLoginFrontend()) {
+            // Request is for frontend, and auto sign in is not enabled for frontend
             return;
         }
 
@@ -71,13 +69,8 @@ class Login extends Component
 
         if (!$userSession->login($user)) {
             // Error occurred while logging in
+            Craft::error('Authentication error while auto signing in '. $user->username, 'cloudflare-access');
             return;
-        }
-
-        $returnUrl = $userSession->getReturnUrl();
-
-        if ($returnUrl != null) {
-            Craft::$app->response->redirect($returnUrl);
         }
     }
 }

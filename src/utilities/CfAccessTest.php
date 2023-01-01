@@ -43,6 +43,7 @@ class CfAccessTest extends Utility
             'issuer' => $plugin->settings->getIssuer(),
             'aud' => $plugin->settings->getAud(),
             'autologin_cp' => $plugin->settings->isAutoLoginCp(),
+            'autologin_frontend' => $plugin->settings->isAutoLoginFrontend(),
         ]);
     }
 }
