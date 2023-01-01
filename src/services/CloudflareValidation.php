@@ -66,6 +66,23 @@ class CloudflareValidation extends Component
         // Parse token:
         $token = $configuration->parser()->parse($jwt);
 
+        // Check whether we have an email:
+        if (!$token->claims()->has('email')) {
+            $result->failureReason = VerificationResult::FAILURE_NO_EMAIL;
+            Craft::warning("Login failure: JWT does not contain an e-mail address", 'cloudflare-access');
+            return $result;
+        }
+
+        $email = $token->claims()->get('email');
+        $result->username = $email;
+
+        // Check whether it is issued by Cloudflare:
+        if (!$token->hasBeenIssuedBy($this->getIssuerUrl())) {
+            $result->failureReason = VerificationResult::FAILURE_WRONG_ISSUER;
+            Craft::warning("Login failure: JWT was not signed by issuer {$this->getIssuerUrl()}", 'cloudflare-access');
+            return $result;
+        }
+
         // Check whether it is issued for this app:
         if (!$token->isPermittedFor(CloudflareAccess::getInstance()->settings->getAud())) {
             $result->failureReason = VerificationResult::FAILURE_WRONG_AUD;
@@ -79,22 +96,6 @@ class CloudflareValidation extends Component
             return $result;
         }
 
-        // Check whether it is issued by Cloudflare:
-        if (!$token->hasBeenIssuedBy($this->getIssuerUrl())) {
-            $result->failureReason = VerificationResult::FAILURE_WRONG_ISSUER;
-            Craft::warning("Login failure: JWT was not signed by isser {$this->getIssuerUrl()}", 'cloudflare-access');
-            return $result;
-        }
-
-        // Check whether we have an email:
-        if (!$token->claims()->has('email')) {
-            $result->failureReason = VerificationResult::FAILURE_NO_EMAIL;
-            Craft::warning("Login failure: JWT does not contain an e-mail address", 'cloudflare-access');
-            return $result;
-        }
-
-        $email = $token->claims()->get('email');
-        $result->username = $email;
         $result->valid = true;
 
         Craft::debug("Valid token for {$email}", 'cloudflare-access');
