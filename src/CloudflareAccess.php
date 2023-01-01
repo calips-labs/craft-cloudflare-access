@@ -5,6 +5,7 @@ namespace calips\cfaccess;
 use Craft;
 use calips\cfaccess\models\Settings;
 use calips\cfaccess\services\CloudflareValidation;
+use calips\cfaccess\services\Login;
 use calips\cfaccess\utilities\CfAccessTest;
 use craft\base\Model;
 use craft\base\Plugin;
@@ -23,6 +24,7 @@ use yii\base\Event;
  * @license https://craftcms.github.io/license/ Craft License
  * @property-read Settings $settings
  * @property-read CloudflareValidation $cloudflareValidation
+ * @property-read Login $login
  */
 class CloudflareAccess extends Plugin
 {
@@ -32,7 +34,10 @@ class CloudflareAccess extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['cloudflareValidation' => CloudflareValidation::class],
+            'components' => [
+                'cloudflareValidation' => CloudflareValidation::class,
+                'login' => Login::class,
+            ],
         ];
     }
 
@@ -70,68 +75,17 @@ class CloudflareAccess extends Plugin
             Application::class,
             Application::EVENT_BEFORE_ACTION,
             function (Event $event) {
-                $plugin = CloudflareAccess::getInstance();
+                // Check whether we should automatically sign in a user
+                $this->login->attemptAutoLogin();
+            }
+        );
 
-                if (!$plugin->settings->enable) {
-                    // Plugin not enabled
-                    return;
-                }
-
-                if (!Application::getInstance()->request->isCpRequest) {
-                    // Not a control panel request
-                    // TODO: also allow non-CP requests
-                    return;
-                }
-
-                if (!Application::getInstance()->user->isGuest) {
-                    // User already logged in
-                    return;
-                }
-
-                // Check whether we can log in this user using Cloudflare Access
-                $jwt = $plugin->cloudflareValidation->getJwtFromHeaders();
-
-                if ($jwt == null) {
-                    // No token set
-                    return;
-                }
-
-                // Validate token
-                $validationResult = $plugin->cloudflareValidation->verifyJwt($jwt);
-
-                if (!$validationResult->valid) {
-                    // Token invalid
-                    return;
-                }
-
-                // Find user:
-                $user = Craft::$app->users->getUserByUsernameOrEmail($validationResult->username);
-
-                if ($user == null) {
-                    // Token valid, but no user found
-                    return;
-                }
-
-                if ($user->pending) {
-                    // Active pending user (we assume identity/e-mail have been verified through Cloudflare IDP):
-                    Craft::$app->users->activateUser($user);
-                }
-
-                $userSession = Craft::$app->getUser();
-
-                if (!$userSession->login($user)) {
-                    // Error occurred while logging in
-                    return;
-                }
-
-                $returnUrl = $userSession->getReturnUrl();
-
-                if ($returnUrl != null) {
-                    Craft::$app->response->redirect($returnUrl);
-                }
-            });
-        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function (RegisterComponentTypesEvent $event) {
-            $event->types[] = CfAccessTest::class;
-        });
+        Event::on(
+            Utilities::class,
+            Utilities::EVENT_REGISTER_UTILITY_TYPES,
+            function (RegisterComponentTypesEvent $event) {
+                $event->types[] = CfAccessTest::class;
+            }
+        );
     }
 }
