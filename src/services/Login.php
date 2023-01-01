@@ -56,6 +56,11 @@ class Login extends Component
             return;
         }
 
+        if ($user->suspended) {
+            // User found, but is suspended in Craft CMS
+            return;
+        }
+
         if ($user->pending) {
             // Active pending user (we assume identity/e-mail have been verified through Cloudflare IDP):
             Craft::$app->users->activateUser($user);
