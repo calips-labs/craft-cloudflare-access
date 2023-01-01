@@ -105,11 +105,16 @@ class CloudflareAccess extends Plugin
                 }
 
                 // Find user:
-                $user = Craft::$app->getUsers()->getUserByUsernameOrEmail($validationResult->username);
+                $user = Craft::$app->users->getUserByUsernameOrEmail($validationResult->username);
 
                 if ($user == null) {
                     // Token valid, but no user found
                     return;
+                }
+
+                if ($user->pending) {
+                    // Active pending user (we assume identity/e-mail have been verified through Cloudflare IDP):
+                    Craft::$app->users->activateUser($user);
                 }
 
                 $userSession = Craft::$app->getUser();
