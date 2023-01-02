@@ -26,11 +26,21 @@ and you increase security when you rely on 2FA from external identity providers.
 You may choose to enable this feature for control panel URLs, frontend URLs, or both. This plugin does not create new
 users if they do not exist in Craft.
 
+## Limitations
+
+This plugin has currently the following limitations:
+
+- Logging out from the control panel does not log a user out from Cloudflare Access, effectively logging them in again
+  immediately.
+- Users must exist in Craft CMS. They are not created automatically.
+- A user will still needs his password for elevated access in the control panel. This is a Craft CMS limitation.
+- Users which are not logged in automatically, will see the normal login screen. They can login using any account.
+
 ## Requirements
 
 This plugin requires Craft CMS 4.3.5 or later, and PHP 8.0.2 or later.
 
-It also requires a Cloudflare Access application. See below for configuration instructions.
+It also requires a Cloudflare Access application to be configured. See below for configuration instructions.
 
 ## Installation
 
@@ -82,8 +92,8 @@ composer require calips-labs/craft-cloudflare-access
 17. Verify that your token is working as expected in Craft through Utilities → Cloudflare Access. It should show your
     Cloudflare login.
 
-**Tip:**
-You can logout from Cloudflare using the following URL:
-`https://<team>.cloudflareaccess.com/cdn-cgi/access/logout`
+**Note:**
+You can logout from Cloudflare Access using the following URL:
+`https://<team>.cloudflareaccess.com/cdn-cgi/access/logout`  
 This can be useful during testing.
 
