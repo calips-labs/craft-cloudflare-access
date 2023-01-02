@@ -23,7 +23,13 @@ class CfAccessTest extends Utility
 
     public static function iconPath(): ?string
     {
-        return null;
+        $iconPath = Craft::getAlias('@vendor/calips-labs/craft-cloudflare-access/src/icon.svg');
+
+        if (!is_string($iconPath)) {
+            return null;
+        }
+
+        return $iconPath;
     }
 
     static function contentHtml(): string
