@@ -45,10 +45,14 @@ class CloudflareAccess extends Plugin
     {
         parent::init();
 
-        // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function () {
+        if (method_exists(Craft::$app, 'onInit')) {
+            // Defer most setup tasks until Craft is fully initialized
+            Craft::$app->onInit(function () {
+                $this->attachEventHandlers();
+            });
+        } else {
             $this->attachEventHandlers();
-        });
+        }
     }
 
     protected function createSettingsModel(): ?Model
