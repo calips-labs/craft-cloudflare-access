@@ -119,6 +119,8 @@
                             {{ 'Token is expired'|t('cloudflare-access') }}
                         {% case constant('FAILURE_NO_KEYS', result) %}
                             {{ 'Could not download keys from Cloudflare'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_NOT_CONFIGURED', result) %}
+                            {{ 'Missing team domain or AUD configuration'|t('cloudflare-access') }}
                         {% default %}
                             {{ result.failureReason|escape }}
                         {% endswitch %}

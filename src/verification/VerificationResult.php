@@ -11,6 +11,7 @@ class VerificationResult
     const FAILURE_INVALID_JWT = 'invalid_jwt';
     const FAILURE_EXPIRED = 'expired';
     const FAILURE_NO_KEYS = 'no_keys';
+    const FAILURE_NOT_CONFIGURED = 'not_configured';
 
     public bool $valid = false;
     public ?string $username = null;

@@ -30,10 +30,18 @@ class CloudflareValidation extends Component
 
     public function verifyJwt($jwt): VerificationResult
     {
-        $this->downloadKeys();
+        $plugin = CloudflareAccess::getInstance();
 
         $result = new VerificationResult();
         $result->valid = false;
+
+        if ($this->getIssuerUrl() == null || $plugin->settings->getAud() == null) {
+            $result->failureReason = VerificationResult::FAILURE_NOT_CONFIGURED;
+            Craft::warning("Login failure: Missing AUD or team domain setting", 'cloudflare-access');
+            return $result;
+        }
+
+        $this->downloadKeys();
 
         // Retrieve key from raw JWT:
         $idToken = rawurldecode($jwt);
@@ -90,7 +98,7 @@ class CloudflareValidation extends Component
         }
 
         // Check whether it is issued for this app:
-        if (!$token->isPermittedFor(CloudflareAccess::getInstance()->settings->getAud())) {
+        if (!$token->isPermittedFor($plugin->settings->getAud())) {
             $result->failureReason = VerificationResult::FAILURE_WRONG_AUD;
             Craft::warning("Login failure: AUD not found in permitted audiences", 'cloudflare-access');
             return $result;
