@@ -1,5 +1,5 @@
 {
-    "name": "calips-labs/craft-cloudflare-access",
+    "name": "calips-labs/cloudflare-access",
     "description": "Cloudflare Access integration for Craft CMS.",
     "type": "craft-plugin",
     "license": "proprietary",
