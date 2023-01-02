@@ -117,6 +117,8 @@
                             {{ 'Invalid JWT'|t('cloudflare-access') }}
                         {% case constant('FAILURE_EXPIRED', result) %}
                             {{ 'Token is expired'|t('cloudflare-access') }}
+                        {% case constant('FAILURE_NO_KEYS', result) %}
+                            {{ 'Could not download keys from Cloudflare'|t('cloudflare-access') }}
                         {% default %}
                             {{ result.failureReason|escape }}
                         {% endswitch %}

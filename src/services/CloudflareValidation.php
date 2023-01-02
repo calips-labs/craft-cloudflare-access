@@ -39,6 +39,12 @@ class CloudflareValidation extends Component
         $idToken = rawurldecode($jwt);
         $signature = json_decode(base64_decode(explode('.', $idToken)[0]), true);
 
+        if (count($this->keys) == 0) {
+            $result->failureReason = VerificationResult::FAILURE_NO_KEYS;
+            Craft::warning("Login failure: Could not download keus", 'cloudflare-access');
+            return $result;
+        }
+
         if ($signature == null || !isset($signature['kid'])) {
             $result->failureReason = VerificationResult::FAILURE_INVALID_JWT;
             Craft::warning("Login failure: Invalid JWT signature or no key ID found in JWT signature", 'cloudflare-access');
@@ -103,9 +109,13 @@ class CloudflareValidation extends Component
         return $result;
     }
 
-    protected function getIssuerUrl(): string
+    protected function getIssuerUrl(): ?string
     {
         $issuer = CloudflareAccess::getInstance()->settings->getIssuer();
+
+        if ($issuer == null) {
+            return null;
+        }
 
         if (!str_starts_with($issuer, 'https://')) {
             $issuer = 'https://' . $issuer;
@@ -114,8 +124,12 @@ class CloudflareValidation extends Component
         return $issuer;
     }
 
-    protected function getJwksUrl(): string
+    protected function getJwksUrl(): ?string
     {
+        if ($this->getIssuerUrl() == null) {
+            return null;
+        }
+
         return $this->getIssuerUrl() . '/cdn-cgi/access/certs';
     }
 
@@ -127,6 +141,10 @@ class CloudflareValidation extends Component
     protected function downloadKeys(): void
     {
         $jwksUrl = $this->getJwksUrl();
+
+        if ($jwksUrl == null) {
+            return;
+        }
 
         $client = new Client();
 
