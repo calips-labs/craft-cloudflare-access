@@ -28,7 +28,7 @@
     "extra": {
         "handle": "cloudflare-access",
         "name": "Cloudflare Access",
-        "developer": "Calips",
+        "developer": "Calips BV",
         "documentationUrl": "https://github.com/calips-labs/craft-cloudflare-access",
         "class": "calips\\cfaccess\\CloudflareAccess"
     },
