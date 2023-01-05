@@ -52,11 +52,11 @@ class Settings extends Model
      */
     public function isAutoLoginCp(): bool
     {
-        return App::parseBooleanEnv($this->autologin_cp);
+        return App::parseBooleanEnv($this->autologin_cp) ?? false;
     }
 
     public function isAutoLoginFrontend(): bool
     {
-        return App::parseBooleanEnv($this->autologin_frontend);
+        return App::parseBooleanEnv($this->autologin_frontend) ?? false;
     }
 }
