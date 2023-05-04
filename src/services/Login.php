@@ -66,6 +66,7 @@ class Login extends Component
         }
 
         $userSession = Craft::$app->getUser();
+        $userSession->enableAutoLogin = true;
 
         if (!$userSession->login($user)) {
             // Error occurred while logging in
