@@ -1,5 +1,10 @@
 # Release Notes for Cloudflare Access
 
+## 1.1.0 - 2025-05-19
+
+- Add support for Craft 5
+- Automatically log out users from Cloudflare Access when they log out of Craft
+
 ## 1.0.4 - 2023-05-04
 
 - Enable auto-login for sessions created by this plugin to minimize the number of logouts
