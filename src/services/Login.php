@@ -61,7 +61,7 @@ class Login extends Component
         }
 
         if ($user->pending) {
-            // Active pending user (we assume identity/e-mail have been verified through Cloudflare IDP):
+            // Activate pending user (we assume identity/e-mail have been verified through Cloudflare IDP):
             Craft::$app->users->activateUser($user);
         }
 
@@ -73,5 +73,7 @@ class Login extends Component
             Craft::error('Authentication error while auto signing in '. $user->username, 'cloudflare-access');
             return;
         }
+
+        Craft::$app->session->set('cloudflare-access-session', true);
     }
 }

@@ -12,6 +12,7 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
 use craft\web\Application;
+use craft\web\User;
 use yii\base\Event;
 
 /**
@@ -79,11 +80,38 @@ class CloudflareAccess extends Plugin
             }
         );
 
+        // Register the utility
+        if (Craft::$app->version < '5.0.0') {
+            Event::on(
+                Utilities::class,
+                Utilities::EVENT_REGISTER_UTILITY_TYPES,
+                function (RegisterComponentTypesEvent $event) {
+                    $event->types[] = CfAccessTest::class;
+                }
+            );
+        } else {
+            Event::on(
+                Utilities::class,
+                Utilities::EVENT_REGISTER_UTILITIES,
+                function (RegisterComponentTypesEvent $event) {
+                    $event->types[] = CfAccessTest::class;
+                }
+            );
+        }
+
+        // If user has session through Cloudflare Access, log them also out through Cloudflare:
         Event::on(
-            Utilities::class,
-            Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = CfAccessTest::class;
+            User::class,
+            User::EVENT_AFTER_LOGOUT,
+            function (Event $event) {
+                $session = Craft::$app->session;
+                if ($session->has('cloudflare-access-session')) {
+                    $session->remove('cloudflare-access-session');
+
+                    // Redirect to CF logout
+                    Craft::$app->response->redirect($this->getSettings()->getLogoutUrl());
+                    Craft::$app->end();
+                }
             }
         );
     }

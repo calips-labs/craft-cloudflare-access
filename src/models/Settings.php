@@ -59,4 +59,11 @@ class Settings extends Model
     {
         return App::parseBooleanEnv($this->autologin_frontend) ?? false;
     }
+
+    public function getLogoutUrl(): string
+    {
+        // Generate logout URL for cloudflare access based on the issuer:
+        $issuer = $this->getIssuer();
+        return "https://$issuer/cdn-cgi/access/logout";
+    }
 }
